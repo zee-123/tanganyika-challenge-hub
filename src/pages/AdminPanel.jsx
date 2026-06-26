@@ -49,17 +49,39 @@ export default function AdminPanel() {
   const [notifBody, setNotifBody] = useState('');
   const [notifStatus, setNotifStatus] = useState('idle');
   const [enableStatus, setEnableStatus] = useState('idle'); // idle | saving | done | error
+  const [enableError, setEnableError] = useState('');
 
   const enableNotifications = async () => {
     setEnableStatus('saving');
+    setEnableError('');
     try {
       const permission = await Notification.requestPermission();
-      if (permission !== 'granted') { setEnableStatus('error'); return; }
+      if (permission !== 'granted') { setEnableStatus('error'); setEnableError('Permission denied'); return; }
+
+      // Unregister existing SWs first to avoid scope conflicts
+      const existing = await navigator.serviceWorker.getRegistrations();
+      for (const sw of existing) await sw.unregister();
+
       const swReg = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-      await navigator.serviceWorker.ready;
+      // Wait for the SW to become active
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => reject(new Error('SW activation timeout')), 10000);
+        if (swReg.active) { clearTimeout(timeout); resolve(); return; }
+        const worker = swReg.installing || swReg.waiting;
+        if (worker) {
+          worker.addEventListener('statechange', e => {
+            if (e.target.state === 'activated') { clearTimeout(timeout); resolve(); }
+            if (e.target.state === 'redundant') { clearTimeout(timeout); reject(new Error('SW became redundant')); }
+          });
+        } else {
+          clearTimeout(timeout); resolve();
+        }
+      });
+
       const messaging = getMessaging();
       const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: swReg });
-      if (!token) { setEnableStatus('error'); return; }
+      if (!token) { setEnableStatus('error'); setEnableError('No token returned — check VAPID key'); return; }
+
       await setDoc(doc(db, 'fcmTokens', currentUser.uid), {
         token, uid: currentUser.uid, updatedAt: new Date().toISOString(),
       }, { merge: true });
@@ -67,6 +89,7 @@ export default function AdminPanel() {
     } catch (err) {
       console.error('Enable notifications error:', err);
       setEnableStatus('error');
+      setEnableError(err.message || String(err));
     }
   };
 
@@ -366,6 +389,9 @@ export default function AdminPanel() {
               {enableStatus === 'idle' ? '🔔 Enable Notifications' : enableStatus === 'saving' ? '⏳ Registering…' : enableStatus === 'done' ? '✅ Enabled!' : '❌ Failed — retry'}
             </button>
           </div>
+          {enableError && (
+            <p className="text-red-400 text-xs mb-3 px-1">Error: {enableError}</p>
+          )}
           <p className="text-purple-300 text-sm mb-4">
             Push a notification to every student who has the app installed and granted permission.
           </p>
