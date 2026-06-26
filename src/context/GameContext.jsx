@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import {
-  doc, onSnapshot, updateDoc, setDoc, increment, arrayUnion,
+  doc, onSnapshot, updateDoc, setDoc, getDoc, increment, arrayUnion,
   collection, query, orderBy, limit,
 } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
@@ -45,6 +45,16 @@ export const BADGES = {
     { id: 'scholar', name: 'Scholar', icon: '🧠', points: 150, color: '#818CF8' },
     { id: 'knowledge_king', name: 'Knowledge King', icon: '👑', points: 300, color: '#F59E0B' },
   ],
+  stem: [
+    { id: 'stem_explorer', name: 'STEM Explorer', icon: '🔭', points: 50, color: '#34D399' },
+    { id: 'stem_scientist', name: 'STEM Scientist', icon: '⚗️', points: 150, color: '#10B981' },
+    { id: 'stem_master', name: 'STEM Master', icon: '🚀', points: 300, color: '#00B09B' },
+  ],
+  olympiad: [
+    { id: 'olympiad_contender', name: 'Olympiad Contender', icon: '🎗️', points: 50, color: '#A78BFA' },
+    { id: 'olympiad_scholar', name: 'Olympiad Scholar', icon: '🥈', points: 150, color: '#7C3AED' },
+    { id: 'olympiad_champion', name: 'Olympiad Champion', icon: '🏅', points: 300, color: '#764BA2' },
+  ],
 };
 
 const EMPTY_STATS = {
@@ -56,31 +66,54 @@ const EMPTY_STATS = {
   spellingPoints: 0,
   sprintPoints: 0,
   knowledgePoints: 0,
+  stemPoints: 0,
+  olympiadPoints: 0,
+  weeklyPoints: 0,
+  weeklyStart: '',
   questionsAnswered: 0,
   correctAnswers: 0,
   badges: [],
 };
+
+function getWeekStart() {
+  const now = new Date();
+  const day = now.getDay();
+  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+  const monday = new Date(now);
+  monday.setDate(diff);
+  return monday.toISOString().split('T')[0];
+}
+
+function getPreviousWeekStart() {
+  const now = new Date();
+  const day = now.getDay();
+  const diff = now.getDate() - day + (day === 0 ? -6 : 1) - 7;
+  const prevMonday = new Date(now);
+  prevMonday.setDate(diff);
+  return prevMonday.toISOString().split('T')[0];
+}
+
+function formatWeekRange(start) {
+  const d = new Date(start + 'T00:00:00');
+  const end = new Date(d);
+  end.setDate(d.getDate() + 6);
+  const opts = { day: 'numeric', month: 'short' };
+  return `${d.toLocaleDateString('en-GB', opts)} – ${end.toLocaleDateString('en-GB', opts)}`;
+}
 
 export function GameProvider({ children }) {
   const { currentUser, userProfile } = useAuth();
   const [stats, setStats] = useState(EMPTY_STATS);
   const [leaderboard, setLeaderboard] = useState([]);
   const [statsLoading, setStatsLoading] = useState(true);
+  const [weeklyChampion, setWeeklyChampion] = useState(null);
 
-  // Real-time listener on the current user's stats
+  // Real-time listener on current user's stats
   useEffect(() => {
-    if (!currentUser) {
-      setStats(EMPTY_STATS);
-      setStatsLoading(false);
-      return;
-    }
+    if (!currentUser) { setStats(EMPTY_STATS); setStatsLoading(false); return; }
     setStatsLoading(true);
     const unsub = onSnapshot(doc(db, 'stats', currentUser.uid), (snap) => {
-      if (snap.exists()) {
-        setStats(snap.data());
-      } else {
-        setStats(EMPTY_STATS);
-      }
+      setStats(snap.exists() ? snap.data() : EMPTY_STATS);
       setStatsLoading(false);
     });
     return unsub;
@@ -90,27 +123,65 @@ export function GameProvider({ children }) {
   useEffect(() => {
     const q = query(collection(db, 'stats'), orderBy('totalPoints', 'desc'), limit(50));
     const unsub = onSnapshot(q, (snap) => {
-      setLeaderboard(
-        snap.docs.map((d, i) => ({ uid: d.id, ...d.data(), rank: i + 1 }))
-      );
+      setLeaderboard(snap.docs.map((d, i) => ({ uid: d.id, ...d.data(), rank: i + 1 })));
     });
     return unsub;
   }, []);
+
+  // Weekly champion: detect new week and crown last week's top scorer
+  useEffect(() => {
+    if (!leaderboard.length) return;
+    const currentWeekStart = getWeekStart();
+
+    getDoc(doc(db, 'config', 'weekly')).then((snap) => {
+      const data = snap.exists() ? snap.data() : {};
+      setWeeklyChampion(data.champion || null);
+
+      if (data.weekStart === currentWeekStart) return;
+
+      // New week detected — find last week's top scorer
+      const prevWeekStart = getPreviousWeekStart();
+      const prevEntries = leaderboard
+        .filter(s => s.weeklyStart === prevWeekStart && (s.weeklyPoints || 0) > 0)
+        .sort((a, b) => (b.weeklyPoints || 0) - (a.weeklyPoints || 0));
+
+      const champ = prevEntries[0];
+      const newChampion = champ ? {
+        uid: champ.uid,
+        name: champ.name || 'Unknown',
+        avatar: champ.avatar || '🎓',
+        yearGroup: champ.yearGroup || '',
+        points: champ.weeklyPoints || 0,
+        weekOf: formatWeekRange(prevWeekStart),
+      } : (data.champion || null);
+
+      setDoc(doc(db, 'config', 'weekly'), {
+        weekStart: currentWeekStart,
+        champion: newChampion,
+        updatedAt: new Date().toISOString(),
+      }, { merge: true });
+
+      setWeeklyChampion(newChampion);
+    }).catch(() => {});
+  }, [leaderboard]);
 
   const addPoints = useCallback(async (subject, pts, correctCount = 1) => {
     if (!currentUser) return;
 
     const subjectKey = `${subject}Points`;
     const currentSubjectPts = (stats[subjectKey] || 0) + pts;
+    const currentWeekStart = getWeekStart();
 
-    // Determine newly earned badges
+    // Badge detection
     const subjectBadges = BADGES[subject] || [];
     const currentBadges = stats.badges || [];
-    const newBadges = subjectBadges.filter(
-      badge => currentSubjectPts >= badge.points && !currentBadges.find(b => b.id === badge.id)
-    ).map(b => ({ ...b, earnedAt: new Date().toISOString() }));
+    const newBadges = subjectBadges
+      .filter(b => currentSubjectPts >= b.points && !currentBadges.find(cb => cb.id === b.id))
+      .map(b => ({ ...b, earnedAt: new Date().toISOString() }));
 
     const ref = doc(db, 'stats', currentUser.uid);
+    const isNewWeek = stats.weeklyStart !== currentWeekStart;
+
     const update = {
       [subjectKey]: increment(pts),
       totalPoints: increment(pts),
@@ -121,10 +192,11 @@ export function GameProvider({ children }) {
       username: userProfile?.username || '',
       yearGroup: userProfile?.yearGroup || '',
       avatar: userProfile?.avatar || '🎓',
+      weeklyStart: currentWeekStart,
+      weeklyPoints: isNewWeek ? pts : increment(pts),
     };
 
     await updateDoc(ref, update);
-
     if (newBadges.length > 0) {
       await updateDoc(ref, { badges: arrayUnion(...newBadges) });
     }
@@ -139,13 +211,18 @@ export function GameProvider({ children }) {
     return { title: 'Beginner', icon: '🌱', color: '#34D399' };
   };
 
-  const logout = async () => {
-    await signOut(auth);
-  };
+  const logout = async () => { await signOut(auth); };
 
   const student = currentUser && userProfile
     ? { uid: currentUser.uid, ...userProfile }
     : null;
+
+  // Weekly leaderboard: same data filtered to current week, sorted by weeklyPoints
+  const currentWeekStart = getWeekStart();
+  const weeklyLeaderboard = [...leaderboard]
+    .filter(s => s.weeklyStart === currentWeekStart && (s.weeklyPoints || 0) > 0)
+    .sort((a, b) => (b.weeklyPoints || 0) - (a.weeklyPoints || 0))
+    .map((s, i) => ({ ...s, weeklyRank: i + 1 }));
 
   return (
     <GameContext.Provider value={{
@@ -155,6 +232,9 @@ export function GameProvider({ children }) {
       addPoints,
       getRank,
       leaderboard,
+      weeklyLeaderboard,
+      weeklyChampion,
+      currentWeekStart,
       logout,
       BADGES,
     }}>
