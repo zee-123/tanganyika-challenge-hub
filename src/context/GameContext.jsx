@@ -179,6 +179,18 @@ export function GameProvider({ children }) {
       .filter(b => currentSubjectPts >= b.points && !currentBadges.find(cb => cb.id === b.id))
       .map(b => ({ ...b, earnedAt: new Date().toISOString() }));
 
+    // Principal's Digital Excellence Award — auto-awarded at 1000 total points
+    const newTotalPoints = (stats.totalPoints || 0) + pts;
+    if (newTotalPoints >= 1000 && !currentBadges.find(b => b.id === 'principal_excellence')) {
+      newBadges.push({
+        id: 'principal_excellence',
+        name: "Principal's Digital Excellence Award",
+        icon: '🎓',
+        color: '#FFD700',
+        earnedAt: new Date().toISOString(),
+      });
+    }
+
     const ref = doc(db, 'stats', currentUser.uid);
     const isNewWeek = stats.weeklyStart !== currentWeekStart;
 

@@ -94,6 +94,11 @@ export default function Navbar() {
                     ))}
                     <div className="border-t border-purple-800/30 my-2" />
                   </div>
+                  <Link to="/parent" onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-purple-200 hover:text-white no-underline font-semibold">
+                    👨‍👩‍👧 Parent Portal
+                  </Link>
+                  <div className="border-t border-purple-800/30 my-1" />
                   <button onClick={logout}
                     className="w-full text-left px-3 py-2 rounded-xl text-red-400 text-sm font-semibold hover:bg-red-500/10 transition-colors cursor-pointer">
                     🚪 Log Out

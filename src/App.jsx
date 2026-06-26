@@ -14,6 +14,7 @@ import StemPage from './pages/StemPage';
 import OlympiadPage from './pages/OlympiadPage';
 import Leaderboard from './pages/Leaderboard';
 import Badges from './pages/Badges';
+import ParentPortal from './pages/ParentPortal';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
@@ -51,6 +52,7 @@ function AppRoutes() {
         <Route path="/olympiad" element={<OlympiadPage />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
         <Route path="/badges" element={<Badges />} />
+        <Route path="/parent" element={<ParentPortal />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
       <Footer />

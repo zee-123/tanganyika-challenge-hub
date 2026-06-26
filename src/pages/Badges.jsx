@@ -40,6 +40,56 @@ export default function Badges() {
           </div>
         </motion.div>
 
+        {/* Principal's Digital Excellence Award */}
+        {(() => {
+          const award = (stats.badges || []).find(b => b.id === 'principal_excellence');
+          const isEarned = !!award;
+          return (
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1 }}
+              className="rounded-2xl p-6 mb-8 relative overflow-hidden"
+              style={{
+                background: isEarned
+                  ? 'linear-gradient(135deg, rgba(255,215,0,0.2) 0%, rgba(255,165,0,0.12) 100%)'
+                  : 'rgba(255,255,255,0.04)',
+                border: isEarned ? '2px solid rgba(255,215,0,0.5)' : '2px dashed rgba(255,255,255,0.12)',
+                filter: isEarned ? 'none' : 'grayscale(60%)',
+                opacity: isEarned ? 1 : 0.6,
+              }}>
+              {isEarned && (
+                <div className="absolute top-0 left-0 right-0 h-0.5"
+                  style={{ background: 'linear-gradient(90deg, transparent, #FFD700, transparent)' }} />
+              )}
+              <div className="flex items-center gap-5">
+                <div className="text-6xl" style={{ filter: isEarned ? 'drop-shadow(0 0 12px #FFD700)' : 'none' }}>🎓</div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="font-poppins font-black text-white text-lg leading-tight">
+                      Principal's Digital Excellence Award
+                    </p>
+                    {isEarned && (
+                      <span className="text-xs px-2 py-0.5 rounded-full font-bold text-white"
+                        style={{ background: '#FFD700', color: '#000' }}>✓ Earned</span>
+                    )}
+                  </div>
+                  <p className="text-yellow-300/70 text-sm">Awarded by The Tanganyika Schools for outstanding academic achievement</p>
+                  <p className="text-yellow-400 text-xs font-bold mt-1">
+                    {isEarned ? `Earned ${new Date(award.earnedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}` : 'Reach 1,000 total points to unlock'}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="font-black text-2xl" style={{ color: isEarned ? '#FFD700' : 'rgba(255,255,255,0.3)' }}>
+                    {isEarned ? '⭐' : '🔒'}
+                  </p>
+                  <p className="text-xs font-bold mt-1" style={{ color: isEarned ? '#FFD700' : 'rgba(255,255,255,0.3)' }}>
+                    1,000 pts
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })()}
+
         {/* Group badges by subject */}
         {Object.entries(SUBJECT_META).map(([key, meta]) => {
           const subjectBadges = (BADGES[key] || []).map(b => ({ ...b, subject: meta.label, subjectIcon: meta.icon }));
