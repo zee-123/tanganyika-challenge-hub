@@ -12,34 +12,44 @@ export function useNotifications(currentUser) {
     if (!currentUser || askedRef.current) return;
     if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
     if (Notification.permission === 'denied') return;
-    if (!VAPID_KEY) { console.warn('FCM: VITE_FCM_VAPID_KEY not set'); return; }
+    if (!VAPID_KEY) { console.warn('FCM: VITE_FCM_VAPID_KEY missing'); return; }
 
     askedRef.current = true;
 
     const setup = async () => {
       try {
         const permission = await Notification.requestPermission();
-        if (permission !== 'granted') return;
+        if (permission !== 'granted') { console.log('FCM: permission not granted'); return; }
 
-        // Register the FCM service worker explicitly at its own scope
-        const reg = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-        await navigator.serviceWorker.ready;
+        console.log('FCM: permission granted, getting token...');
+
+        // Wait for any existing SW to be ready, then also register FCM SW
+        let swReg;
+        try {
+          swReg = await navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: '/firebase-push-scope' });
+          await swReg.update();
+          console.log('FCM: SW registered at', swReg.scope);
+        } catch (swErr) {
+          console.warn('FCM: SW registration failed, trying without:', swErr.message);
+          swReg = undefined;
+        }
 
         const messaging = getMessaging();
-        const token = await getToken(messaging, {
-          vapidKey: VAPID_KEY,
-          serviceWorkerRegistration: reg,
-        });
+        const tokenOptions = { vapidKey: VAPID_KEY };
+        if (swReg) tokenOptions.serviceWorkerRegistration = swReg;
+
+        const token = await getToken(messaging, tokenOptions);
 
         if (token) {
-          console.log('FCM token saved:', token.slice(0, 20) + '…');
+          console.log('FCM: token obtained, saving to Firestore...');
           await setDoc(doc(db, 'fcmTokens', currentUser.uid), {
             token,
             uid: currentUser.uid,
             updatedAt: new Date().toISOString(),
           }, { merge: true });
+          console.log('FCM: token saved successfully ✅');
         } else {
-          console.warn('FCM: no token returned');
+          console.warn('FCM: no token returned — check VAPID key and SW');
         }
 
         onMessage(messaging, (payload) => {
@@ -47,7 +57,7 @@ export function useNotifications(currentUser) {
           if (title) new Notification(title, { body, icon: '/android-chrome-192x192.png' });
         });
       } catch (err) {
-        console.error('FCM setup error:', err);
+        console.error('FCM setup error:', err.code || err.message, err);
       }
     };
 
