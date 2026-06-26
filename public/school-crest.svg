@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140" width="120" height="140">
+  <!-- Shield border -->
+  <path d="M10,10 L110,10 L110,90 Q110,130 60,135 Q10,130 10,90 Z" fill="#1a237e" />
+  <!-- Shield inner -->
+  <path d="M15,15 L105,15 L105,88 Q105,125 60,130 Q15,125 15,88 Z" fill="#2e7d32" />
+  <!-- Yellow top band -->
+  <rect x="15" y="15" width="90" height="28" fill="#f9c900" rx="2"/>
+  <!-- Black stripe under yellow -->
+  <rect x="15" y="40" width="90" height="5" fill="#111"/>
+  <!-- Navy chevron -->
+  <polygon points="15,50 60,80 105,50 105,65 60,95 15,65" fill="#1a237e"/>
+  <!-- Star -->
+  <polygon points="60,52 63,61 72,61 65,67 68,76 60,70 52,76 55,67 48,61 57,61" fill="#f9c900"/>
+  <!-- TS monogram area -->
+  <text x="60" y="118" font-family="Georgia,serif" font-size="18" font-weight="bold" fill="#f9c900" text-anchor="middle" font-style="italic">TS</text>
+</svg>
