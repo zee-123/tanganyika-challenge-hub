@@ -2,10 +2,13 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGame } from '../context/GameContext';
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import { getMessaging, getToken } from 'firebase/messaging';
+import { useAuth } from '../context/AuthContext';
 
 const NOTIFY_SECRET = import.meta.env.VITE_NOTIFY_SECRET || '';
+const VAPID_KEY = import.meta.env.VITE_FCM_VAPID_KEY || '';
 
 const SUBJECTS = [
   { key: 'englishPoints', label: 'English', icon: '📖', color: '#667eea' },
@@ -34,6 +37,7 @@ function accuracy(s) {
 
 export default function AdminPanel() {
   const { leaderboard, isAdmin, BADGES } = useGame();
+  const { currentUser } = useAuth();
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('totalPoints');
@@ -43,7 +47,28 @@ export default function AdminPanel() {
   // Announcement state
   const [notifTitle, setNotifTitle] = useState('');
   const [notifBody, setNotifBody] = useState('');
-  const [notifStatus, setNotifStatus] = useState('idle'); // idle | sending | sent | error
+  const [notifStatus, setNotifStatus] = useState('idle');
+  const [enableStatus, setEnableStatus] = useState('idle'); // idle | saving | done | error
+
+  const enableNotifications = async () => {
+    setEnableStatus('saving');
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') { setEnableStatus('error'); return; }
+      const swReg = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+      await navigator.serviceWorker.ready;
+      const messaging = getMessaging();
+      const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: swReg });
+      if (!token) { setEnableStatus('error'); return; }
+      await setDoc(doc(db, 'fcmTokens', currentUser.uid), {
+        token, uid: currentUser.uid, updatedAt: new Date().toISOString(),
+      }, { merge: true });
+      setEnableStatus('done');
+    } catch (err) {
+      console.error('Enable notifications error:', err);
+      setEnableStatus('error');
+    }
+  };
 
   const sendAnnouncement = async () => {
     if (!notifTitle.trim() || !notifBody.trim()) return;
@@ -330,6 +355,17 @@ export default function AdminPanel() {
         className="max-w-7xl mx-auto mt-8">
         <h2 className="text-white font-bold text-lg mb-4">📣 Send Announcement to All Students</h2>
         <div className="rounded-2xl p-6" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(168,85,247,0.25)' }}>
+          <div className="flex items-center gap-4 mb-5 p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(168,85,247,0.2)' }}>
+            <div>
+              <p className="text-white text-sm font-semibold">Your notification status</p>
+              <p className="text-purple-400 text-xs">Register this device to receive & test notifications</p>
+            </div>
+            <button onClick={enableNotifications} disabled={enableStatus === 'saving' || enableStatus === 'done'}
+              className="ml-auto px-4 py-2 rounded-xl text-sm font-bold cursor-pointer flex-shrink-0 disabled:opacity-60"
+              style={{ background: enableStatus === 'done' ? 'rgba(52,211,153,0.2)' : 'rgba(168,85,247,0.3)', border: '1px solid rgba(168,85,247,0.5)', color: enableStatus === 'done' ? '#34d399' : 'white' }}>
+              {enableStatus === 'idle' ? '🔔 Enable Notifications' : enableStatus === 'saving' ? '⏳ Registering…' : enableStatus === 'done' ? '✅ Enabled!' : '❌ Failed — retry'}
+            </button>
+          </div>
           <p className="text-purple-300 text-sm mb-4">
             Push a notification to every student who has the app installed and granted permission.
           </p>
