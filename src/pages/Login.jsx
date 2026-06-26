@@ -30,6 +30,8 @@ const validateUsername = (u) => /^[a-z0-9_]{3,20}$/.test(u);
 const EMPTY_STATS = {
   totalPoints: 0, englishPoints: 0, mathPoints: 0, sciencePoints: 0,
   readingPoints: 0, spellingPoints: 0, sprintPoints: 0, knowledgePoints: 0,
+  stemPoints: 0, olympiadPoints: 0,
+  weeklyPoints: 0, weeklyStart: '',
   questionsAnswered: 0, correctAnswers: 0, badges: [],
 };
 
@@ -52,7 +54,7 @@ export default function Login() {
   const [regAvatar, setRegAvatar] = useState('🦁');
   const [usernameStatus, setUsernameStatus] = useState(null); // null | 'checking' | 'taken' | 'available'
 
-  // Username availability check (debounced)
+  // Username availability check (debounced) — silently fails if unauthenticated
   useEffect(() => {
     if (!regUsername || !validateUsername(regUsername)) {
       setUsernameStatus(null);
@@ -106,19 +108,23 @@ export default function Login() {
   const handleRegisterFinish = async () => {
     setLoading(true);
     setError('');
+    let createdUser = null;
     try {
       const uname = regUsername.toLowerCase().trim();
-      // Double-check username isn't taken
+
+      // Create Firebase Auth user first — this authenticates us for Firestore writes
+      const { user } = await createUserWithEmailAndPassword(auth, toEmail(uname), regPassword);
+      createdUser = user;
+
+      // Double-check username isn't taken (now authenticated, read is allowed)
       const usernameSnap = await getDoc(doc(db, 'usernames', uname));
       if (usernameSnap.exists()) {
+        await user.delete();
         setError('That username was just taken — please choose another.');
         setStep(1);
         setLoading(false);
         return;
       }
-
-      // Create Firebase Auth user
-      const { user } = await createUserWithEmailAndPassword(auth, toEmail(uname), regPassword);
 
       // Write Firestore docs atomically
       await Promise.all([
@@ -140,6 +146,10 @@ export default function Login() {
         }),
       ]);
     } catch (err) {
+      // If Firestore writes failed after auth was created, delete the orphaned auth user
+      if (createdUser && err.code !== 'auth/email-already-in-use') {
+        try { await createdUser.delete(); } catch {}
+      }
       setError('Registration failed: ' + err.message);
     } finally {
       setLoading(false);
