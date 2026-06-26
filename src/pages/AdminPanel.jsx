@@ -361,7 +361,7 @@ export default function AdminPanel() {
             </button>
             {notifStatus === 'error' && (
               <p className="text-red-400 text-xs">
-                Failed to send. Make sure FCM_SERVER_KEY and VITE_NOTIFY_SECRET are set in Vercel environment variables.
+                Failed to send. No students may have accepted notifications yet, or check Vercel logs for API errors.
               </p>
             )}
             <p className="text-purple-500 text-xs">
