@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGame } from '../context/GameContext';
 import confetti from 'canvas-confetti';
@@ -25,7 +25,7 @@ function generateQuestion(yearKey) {
     const a = r(1, 5), b = r(1, 5);
     const ops = [
       { q: `${a} + ${b} = ?`, ans: a + b },
-      { q: `${a + b} âˆ’ ${b} = ?`, ans: a },
+      { q: `${a + b} − ${b} = ?`, ans: a },
     ];
     const op = ops[Math.floor(Math.random() * ops.length)];
     question = op.q; answer = op.ans;
@@ -33,40 +33,40 @@ function generateQuestion(yearKey) {
     const a = r(1, 20), b = r(1, 20);
     const ops = [
       { q: `${a} + ${b} = ?`, ans: a + b },
-      { q: `${Math.max(a,b)} âˆ’ ${Math.min(a,b)} = ?`, ans: Math.max(a,b) - Math.min(a,b) },
-      { q: `${r(2,5)} Ã— ${r(2,5)} = ?`, ans: null },
+      { q: `${Math.max(a,b)} − ${Math.min(a,b)} = ?`, ans: Math.max(a,b) - Math.min(a,b) },
+      { q: `${r(2,5)} × ${r(2,5)} = ?`, ans: null },
     ];
-    if (ops[2].ans === null) { const x = r(2,5), y = r(2,5); ops[2].q = `${x} Ã— ${y} = ?`; ops[2].ans = x * y; }
+    if (ops[2].ans === null) { const x = r(2,5), y = r(2,5); ops[2].q = `${x} × ${y} = ?`; ops[2].ans = x * y; }
     const op = ops[Math.floor(Math.random() * ops.length)];
     question = op.q; answer = op.ans;
   } else if (yearKey === 'Year 3-4') {
     const x = r(2, 12), y = r(2, 12);
     const ops = [
-      { q: `${x} Ã— ${y} = ?`, ans: x * y },
-      { q: `${x * y} Ã· ${x} = ?`, ans: y },
+      { q: `${x} × ${y} = ?`, ans: x * y },
+      { q: `${x * y} ÷ ${x} = ?`, ans: y },
       { q: `${r(10,99)} + ${r(10,99)} = ?`, ans: null },
-      { q: `${r(20,99)} âˆ’ ${r(10,19)} = ?`, ans: null },
+      { q: `${r(20,99)} − ${r(10,19)} = ?`, ans: null },
     ];
     if (ops[2].ans === null) { const a = r(10,99), b = r(10,99); ops[2].q = `${a} + ${b} = ?`; ops[2].ans = a + b; }
-    if (ops[3].ans === null) { const a = r(20,99), b = r(10,19); ops[3].q = `${a} âˆ’ ${b} = ?`; ops[3].ans = a - b; }
+    if (ops[3].ans === null) { const a = r(20,99), b = r(10,19); ops[3].q = `${a} − ${b} = ?`; ops[3].ans = a - b; }
     const op = ops[Math.floor(Math.random() * ops.length)];
     question = op.q; answer = op.ans;
   } else if (yearKey === 'Year 5-6') {
     const ops = [
-      () => { const a = r(3,15), b = r(3,15); return { q: `${a} Ã— ${b} = ?`, ans: a * b }; },
-      () => { const a = r(2,12), b = r(2,12); return { q: `${a*b} Ã· ${a} = ?`, ans: b }; },
+      () => { const a = r(3,15), b = r(3,15); return { q: `${a} × ${b} = ?`, ans: a * b }; },
+      () => { const a = r(2,12), b = r(2,12); return { q: `${a*b} ÷ ${a} = ?`, ans: b }; },
       () => { const a = r(100,999), b = r(10,99); return { q: `${a} + ${b} = ?`, ans: a + b }; },
-      () => { const a = r(100,999), b = r(10,99); return { q: `${a} âˆ’ ${b} = ?`, ans: a - b }; },
-      () => { const a = r(2,9); return { q: `${a}Â² = ?`, ans: a * a }; },
+      () => { const a = r(100,999), b = r(10,99); return { q: `${a} − ${b} = ?`, ans: a - b }; },
+      () => { const a = r(2,9); return { q: `${a}² = ?`, ans: a * a }; },
     ];
     const op = ops[Math.floor(Math.random() * ops.length)]();
     question = op.q; answer = op.ans;
   } else {
     const ops = [
-      () => { const a = r(10,30), b = r(10,30); return { q: `${a} Ã— ${b} = ?`, ans: a * b }; },
-      () => { const a = r(2,12), b = r(2,12); const c = a * b; return { q: `${c} Ã· ${a} = ?`, ans: b }; },
-      () => { const a = r(2,12); return { q: `${a}Â² = ?`, ans: a * a }; },
-      () => { const a = r(2,9); return { q: `âˆš${a*a} = ?`, ans: a }; },
+      () => { const a = r(10,30), b = r(10,30); return { q: `${a} × ${b} = ?`, ans: a * b }; },
+      () => { const a = r(2,12), b = r(2,12); const c = a * b; return { q: `${c} ÷ ${a} = ?`, ans: b }; },
+      () => { const a = r(2,12); return { q: `${a}² = ?`, ans: a * a }; },
+      () => { const a = r(2,9); return { q: `√${a*a} = ?`, ans: a }; },
       () => { const a = r(1,100), b = r(1,100); return { q: `${a} + ${b} = ?`, ans: a + b }; },
     ];
     const op = ops[Math.floor(Math.random() * ops.length)]();
@@ -160,7 +160,7 @@ export default function SprintPage() {
       <div className="max-w-2xl mx-auto px-4 relative z-10">
 
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-6">
-          <h1 className="font-poppins font-black text-4xl text-white mb-1">âš¡ Mental Maths Sprint</h1>
+          <h1 className="font-poppins font-black text-4xl text-white mb-1">⚡ Mental Maths Sprint</h1>
           <p className="text-pink-300 font-semibold">Answer as many as you can in 60 seconds!</p>
         </motion.div>
 
@@ -185,18 +185,18 @@ export default function SprintPage() {
           {phase === 'ready' && (
             <motion.div key="ready" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
               className="glass rounded-3xl p-8 text-center">
-              <div className="text-7xl mb-4">âš¡</div>
+              <div className="text-7xl mb-4">⚡</div>
               <h2 className="font-poppins font-black text-2xl text-white mb-3">Ready to Sprint?</h2>
               <div className="glass rounded-2xl p-4 mb-6 text-left space-y-2">
-                <p className="text-pink-300 text-sm">â° You have <strong className="text-white">60 seconds</strong></p>
-                <p className="text-pink-300 text-sm">ðŸ”¢ Answer as many maths questions as possible</p>
-                <p className="text-pink-300 text-sm">â­ Earn <strong className="text-white">{POINTS_PER_CORRECT} points</strong> per correct answer</p>
-                <p className="text-pink-300 text-sm">âš¡ Questions auto-advance â€” keep going!</p>
+                <p className="text-pink-300 text-sm">⏰ You have <strong className="text-white">60 seconds</strong></p>
+                <p className="text-pink-300 text-sm">🔢 Answer as many maths questions as possible</p>
+                <p className="text-pink-300 text-sm">⭐ Earn <strong className="text-white">{POINTS_PER_CORRECT} points</strong> per correct answer</p>
+                <p className="text-pink-300 text-sm">⚡ Questions auto-advance — keep going!</p>
               </div>
               <motion.button onClick={startSprint} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                 className="w-full py-4 rounded-2xl font-poppins font-bold text-white text-xl cursor-pointer"
                 style={{ background: GRADIENT, boxShadow: `0 8px 32px ${GLOW}` }}>
-                ðŸš€ Start Sprint!
+                🚀 Start Sprint!
               </motion.button>
             </motion.div>
           )}
@@ -228,7 +228,7 @@ export default function SprintPage() {
                 transition={{ duration: 0.15 }}
                 className="rounded-3xl p-8 mb-5 text-center"
                 style={{ border: '1px solid rgba(250,112,154,0.3)' }}>
-                <div className="text-4xl mb-1">{flash === 'correct' ? 'âœ…' : flash === 'wrong' ? 'âŒ' : 'ðŸ”¢'}</div>
+                <div className="text-4xl mb-1">{flash === 'correct' ? '✅' : flash === 'wrong' ? '❌' : '🔢'}</div>
                 <h2 className="font-poppins font-black text-white mb-1" style={{ fontSize: '2.5rem' }}>
                   {q.question}
                 </h2>
@@ -249,7 +249,7 @@ export default function SprintPage() {
               </div>
 
               <div className="flex justify-center mt-4">
-                <p className="text-pink-400/60 text-xs">{total} answered Â· {accuracy}% accuracy</p>
+                <p className="text-pink-400/60 text-xs">{total} answered · {accuracy}% accuracy</p>
               </div>
             </motion.div>
           )}
@@ -258,11 +258,11 @@ export default function SprintPage() {
           {phase === 'finished' && (
             <motion.div key="finished" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
               className="glass rounded-3xl p-8 text-center">
-              <div className="text-6xl mb-3">{score >= 15 ? 'ðŸš€' : score >= 8 ? 'âš¡' : 'ðŸ’ª'}</div>
+              <div className="text-6xl mb-3">{score >= 15 ? '🚀' : score >= 8 ? '⚡' : '💪'}</div>
               <h2 className="font-poppins font-black text-3xl text-white mb-1">
                 {score >= 15 ? 'Lightning Fast!' : score >= 8 ? 'Great Sprint!' : 'Good Effort!'}
               </h2>
-              <p className="text-pink-300 mb-6">{selectedYear} Â· Mental Maths Sprint</p>
+              <p className="text-pink-300 mb-6">{selectedYear} · Mental Maths Sprint</p>
               <div className="grid grid-cols-3 gap-3 mb-6">
                 <div className="glass rounded-xl p-3">
                   <p className="text-green-400 font-black text-2xl">{score}</p>
@@ -285,7 +285,7 @@ export default function SprintPage() {
                 <motion.button onClick={startSprint} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                   className="flex-1 py-4 rounded-xl font-poppins font-bold text-white text-lg cursor-pointer"
                   style={{ background: GRADIENT }}>
-                  âš¡ Sprint Again!
+                  ⚡ Sprint Again!
                 </motion.button>
               </div>
             </motion.div>
@@ -295,4 +295,3 @@ export default function SprintPage() {
     </div>
   );
 }
-

@@ -1,11 +1,11 @@
-﻿import { motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useGame } from '../context/GameContext';
 import StarField from '../components/StarField';
 
 const subjects = [
   {
-    path: '/english', icon: 'ðŸ“–', label: 'English Adventure',
+    path: '/english', icon: '📖', label: 'English Adventure',
     desc: 'Grammar, vocabulary & language skills',
     gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     glow: 'rgba(102,126,234,0.4)',
@@ -13,7 +13,7 @@ const subjects = [
     phase: 1,
   },
   {
-    path: '/math', icon: 'âš”ï¸', label: 'Math Quest',
+    path: '/math', icon: '⚔️', label: 'Math Quest',
     desc: 'Battle monsters with maths power!',
     gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
     glow: 'rgba(240,147,251,0.4)',
@@ -21,7 +21,7 @@ const subjects = [
     phase: 1,
   },
   {
-    path: '/science', icon: 'ðŸ”¬', label: 'Science Explorer',
+    path: '/science', icon: '🔬', label: 'Science Explorer',
     desc: 'Discover the world of science',
     gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
     glow: 'rgba(79,172,254,0.4)',
@@ -29,7 +29,7 @@ const subjects = [
     phase: 1,
   },
   {
-    path: '/reading', icon: 'ðŸ“š', label: 'Reading Race',
+    path: '/reading', icon: '📚', label: 'Reading Race',
     desc: 'Read passages & answer comprehension questions',
     gradient: 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)',
     glow: 'rgba(246,211,101,0.4)',
@@ -37,7 +37,7 @@ const subjects = [
     phase: 2,
   },
   {
-    path: '/spelling', icon: 'ðŸ', label: 'Spelling Bee',
+    path: '/spelling', icon: '🐝', label: 'Spelling Bee',
     desc: 'Choose the correct spelling from four options',
     gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
     glow: 'rgba(67,233,123,0.4)',
@@ -45,7 +45,7 @@ const subjects = [
     phase: 2,
   },
   {
-    path: '/sprint', icon: 'âš¡', label: 'Mental Maths Sprint',
+    path: '/sprint', icon: '⚡', label: 'Mental Maths Sprint',
     desc: '60-second rapid-fire maths challenge!',
     gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
     glow: 'rgba(250,112,154,0.4)',
@@ -53,8 +53,8 @@ const subjects = [
     phase: 2,
   },
   {
-    path: '/knowledge', icon: 'ðŸŒ', label: 'Knowledge League',
-    desc: 'Maths Â· Science Â· Geography Â· Tanzania Â· ICT',
+    path: '/knowledge', icon: '🌍', label: 'Knowledge League',
+    desc: 'Maths · Science · Geography · Tanzania · ICT',
     gradient: 'linear-gradient(135deg, #0093E9 0%, #80D0C7 100%)',
     glow: 'rgba(0,147,233,0.4)',
     key: 'knowledge',
@@ -68,7 +68,7 @@ const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } };
 export default function Dashboard() {
   const { student, stats, getRank, leaderboard } = useGame();
   const rank = getRank();
-  const myRank = leaderboard.find(s => s.uid === student?.uid)?.rank || 'â€”';
+  const myRank = leaderboard.find(s => s.uid === student?.uid)?.rank || '—';
   const accuracy = stats.questionsAnswered > 0
     ? Math.round((stats.correctAnswers / stats.questionsAnswered) * 100) : 0;
 
@@ -83,11 +83,11 @@ export default function Dashboard() {
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
           className="glass rounded-3xl p-6 mb-8 flex flex-col sm:flex-row items-center gap-4"
           style={{ background: 'linear-gradient(135deg, rgba(168,85,247,0.2), rgba(99,102,241,0.15))', border: '1px solid rgba(168,85,247,0.3)' }}>
-          <div className="text-6xl floating">{student?.avatar || 'ðŸŽ“'}</div>
+          <div className="text-6xl floating">{student?.avatar || '🎓'}</div>
           <div className="text-center sm:text-left">
             <p className="text-purple-300 text-sm font-semibold">Welcome back,</p>
             <h1 className="font-poppins font-black text-3xl text-white">{student?.name}</h1>
-            <p className="text-purple-300 text-sm">{student?.yearGroup} Â· Sky Wings Academy</p>
+            <p className="text-purple-300 text-sm">{student?.yearGroup} · Sky Wings Academy</p>
           </div>
           <div className="sm:ml-auto flex items-center gap-3">
             <div className="text-center px-5 py-3 rounded-2xl" style={{ background: 'rgba(251,191,36,0.15)', border: '1px solid rgba(251,191,36,0.3)' }}>
@@ -106,7 +106,7 @@ export default function Dashboard() {
           className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           {[
             { label: 'Rank', value: rank.icon + ' ' + rank.title, color: rank.color },
-            { label: 'Badges', value: `ðŸŽ–ï¸ ${stats.badges.length}`, color: '#F59E0B' },
+            { label: 'Badges', value: `🎖️ ${stats.badges.length}`, color: '#F59E0B' },
             { label: 'Accuracy', value: `${accuracy}%`, color: '#34D399' },
             { label: 'Questions', value: stats.questionsAnswered, color: '#60A5FA' },
           ].map(stat => (
@@ -121,10 +121,10 @@ export default function Dashboard() {
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Subject cards */}
           <div className="lg:col-span-2">
-            <h2 className="font-poppins font-bold text-white text-xl mb-4">ðŸ“š Choose Your Challenge</h2>
+            <h2 className="font-poppins font-bold text-white text-xl mb-4">📚 Choose Your Challenge</h2>
 
             {/* Phase 1 */}
-            <p className="text-purple-400 text-xs font-bold uppercase tracking-widest mb-3">Phase 1 â€” Core Subjects</p>
+            <p className="text-purple-400 text-xs font-bold uppercase tracking-widest mb-3">Phase 1 — Core Subjects</p>
             <motion.div variants={container} initial="hidden" animate="show" className="flex flex-col gap-3 mb-5">
               {subjects.filter(s => s.phase === 1).map(sub => {
                 const subPoints = stats[`${sub.key}Points`] || 0;
@@ -145,7 +145,7 @@ export default function Dashboard() {
                             <span className="text-white text-xs font-bold">{subPoints} pts</span>
                           </div>
                         </div>
-                        <div className="text-white text-xl">â†’</div>
+                        <div className="text-white text-xl">→</div>
                       </div>
                     </Link>
                   </motion.div>
@@ -154,7 +154,7 @@ export default function Dashboard() {
             </motion.div>
 
             {/* Phase 2 */}
-            <p className="text-yellow-400 text-xs font-bold uppercase tracking-widest mb-3">â­ Phase 2 â€” New Challenges</p>
+            <p className="text-yellow-400 text-xs font-bold uppercase tracking-widest mb-3">⭐ Phase 2 — New Challenges</p>
             <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-2 gap-3">
               {subjects.filter(s => s.phase === 2).map(sub => {
                 const subPoints = stats[`${sub.key}Points`] || 0;
@@ -184,9 +184,9 @@ export default function Dashboard() {
           {/* Mini leaderboard */}
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-poppins font-bold text-white text-xl">ðŸ† Top Students</h2>
+              <h2 className="font-poppins font-bold text-white text-xl">🏆 Top Students</h2>
               <Link to="/leaderboard" className="text-purple-400 text-sm font-semibold no-underline hover:text-purple-300">
-                See all â†’
+                See all →
               </Link>
             </div>
             <div className="glass rounded-2xl overflow-hidden">
@@ -199,7 +199,7 @@ export default function Dashboard() {
                     style={{ background: isMe ? 'rgba(168,85,247,0.2)' : 'transparent' }}>
                     <div className="font-black text-sm w-6 text-center"
                       style={{ color: i === 0 ? '#FFD700' : i === 1 ? '#C0C0C0' : i === 2 ? '#CD7F32' : 'rgba(255,255,255,0.4)' }}>
-                      {i === 0 ? 'ðŸ¥‡' : i === 1 ? 'ðŸ¥ˆ' : i === 2 ? 'ðŸ¥‰' : `#${s.rank}`}
+                      {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${s.rank}`}
                     </div>
                     <div className="text-xl">{s.avatar}</div>
                     <div className="flex-1 min-w-0">
@@ -219,8 +219,8 @@ export default function Dashboard() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
             className="mt-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-poppins font-bold text-white text-xl">ðŸŽ–ï¸ Your Badges</h2>
-              <Link to="/badges" className="text-purple-400 text-sm font-semibold no-underline">See all â†’</Link>
+              <h2 className="font-poppins font-bold text-white text-xl">🎖️ Your Badges</h2>
+              <Link to="/badges" className="text-purple-400 text-sm font-semibold no-underline">See all →</Link>
             </div>
             <div className="flex flex-wrap gap-3">
               {stats.badges.map(badge => (
@@ -237,4 +237,3 @@ export default function Dashboard() {
     </div>
   );
 }
-

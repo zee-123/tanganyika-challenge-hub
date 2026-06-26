@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGame } from '../context/GameContext';
 import { readingPool, getReadingPoints, getRandomPassage } from '../data/readingPassages';
@@ -133,7 +133,7 @@ export default function ReadingPage() {
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
           className="text-center mb-6">
-          <h1 className="font-poppins font-black text-4xl text-white mb-1">ðŸ“– Reading Race</h1>
+          <h1 className="font-poppins font-black text-4xl text-white mb-1">📖 Reading Race</h1>
           <p className="text-orange-300 font-semibold">Read carefully, then answer the questions!</p>
         </motion.div>
 
@@ -159,10 +159,10 @@ export default function ReadingPage() {
               <div className="glass rounded-3xl p-6 mb-5"
                 style={{ border: '1px solid rgba(246,211,101,0.25)', background: 'rgba(246,211,101,0.05)' }}>
                 <div className="flex items-center gap-3 mb-4">
-                  <span className="text-3xl">ðŸ“–</span>
+                  <span className="text-3xl">📖</span>
                   <div>
                     <h2 className="font-poppins font-bold text-white text-xl">{passage?.title}</h2>
-                    <p className="text-orange-300 text-xs font-semibold">{selectedYear} Â· {pts} pts per question</p>
+                    <p className="text-orange-300 text-xs font-semibold">{selectedYear} · {pts} pts per question</p>
                   </div>
                 </div>
                 <div className="rounded-2xl p-5 leading-relaxed text-white/90 text-base"
@@ -170,13 +170,13 @@ export default function ReadingPage() {
                   {passage?.passage}
                 </div>
                 <p className="text-orange-300/70 text-xs mt-3 text-center">
-                  ðŸ“ Read carefully â€” {passage?.questions?.length} questions await!
+                  📝 Read carefully — {passage?.questions?.length} questions await!
                 </p>
               </div>
               <motion.button onClick={startQuiz} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                 className="w-full py-4 rounded-2xl font-poppins font-bold text-white text-lg cursor-pointer"
                 style={{ background: GRADIENT, boxShadow: `0 8px 32px ${GLOW}` }}>
-                âœ… I've Read It â€” Start Questions!
+                ✅ I've Read It — Start Questions!
               </motion.button>
             </motion.div>
           )}
@@ -196,7 +196,7 @@ export default function ReadingPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 px-3 py-1 rounded-xl" style={{ background: `${timerColor}20`, border: `1px solid ${timerColor}40` }}>
-                  <span style={{ color: timerColor }} className="font-bold text-sm">â± {timeLeft}s</span>
+                  <span style={{ color: timerColor }} className="font-bold text-sm">⏱ {timeLeft}s</span>
                 </div>
               </div>
               <div className="h-2 rounded-full bg-white/10 mb-5">
@@ -232,8 +232,8 @@ export default function ReadingPage() {
                         {['A','B','C','D'][idx]}
                       </span>
                       {opt}
-                      {answered && isCorrect && <span className="ml-2">âœ…</span>}
-                      {answered && isSelected && !isCorrect && <span className="ml-2">âŒ</span>}
+                      {answered && isCorrect && <span className="ml-2">✅</span>}
+                      {answered && isSelected && !isCorrect && <span className="ml-2">❌</span>}
                     </motion.button>
                   );
                 })}
@@ -243,13 +243,13 @@ export default function ReadingPage() {
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                   className={`mt-4 rounded-2xl p-4 text-center font-poppins font-bold text-lg ${selected === q.answer ? 'text-green-400' : 'text-red-400'}`}
                   style={{ background: selected === q.answer ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)' }}>
-                  {selected === q.answer ? `ðŸŽ‰ Correct! +${pts} points!` : selected === '__timeout__' ? `â° Time's up! Answer: ${q.answer}` : `âŒ Answer: ${q.answer}`}
+                  {selected === q.answer ? `🎉 Correct! +${pts} points!` : selected === '__timeout__' ? `⏰ Time's up! Answer: ${q.answer}` : `❌ Answer: ${q.answer}`}
                 </motion.div>
               )}
 
               <div className="flex items-center justify-between mt-5 px-2">
                 <span className="text-orange-300 text-sm">Score this round</span>
-                <span className="text-yellow-400 font-black text-xl">â­ {score}</span>
+                <span className="text-yellow-400 font-black text-xl">⭐ {score}</span>
               </div>
             </motion.div>
           )}
@@ -263,11 +263,11 @@ export default function ReadingPage() {
                 const pct = Math.round((correct / results.length) * 100);
                 return (
                   <>
-                    <div className="text-6xl mb-4">{pct >= 80 ? 'ðŸŒŸ' : pct >= 60 ? 'ðŸ“š' : 'ðŸ’ª'}</div>
+                    <div className="text-6xl mb-4">{pct >= 80 ? '🌟' : pct >= 60 ? '📚' : '💪'}</div>
                     <h2 className="font-poppins font-black text-3xl text-white mb-1">
                       {pct >= 80 ? 'Excellent Reader!' : pct >= 60 ? 'Good Work!' : 'Keep Reading!'}
                     </h2>
-                    <p className="text-orange-300 mb-6">{passage?.title} Â· {selectedYear}</p>
+                    <p className="text-orange-300 mb-6">{passage?.title} · {selectedYear}</p>
                     <div className="grid grid-cols-3 gap-3 mb-6">
                       <div className="glass rounded-xl p-3">
                         <p className="text-yellow-400 font-black text-2xl">{score}</p>
@@ -285,7 +285,7 @@ export default function ReadingPage() {
                     <div className="space-y-2 mb-6 text-left max-h-40 overflow-y-auto">
                       {results.map((r, i) => (
                         <div key={i} className={`rounded-xl px-3 py-2 text-sm flex items-start gap-2 ${r.correct ? 'bg-green-500/10 text-green-300' : 'bg-red-500/10 text-red-300'}`}>
-                          <span>{r.correct ? 'âœ…' : 'âŒ'}</span>
+                          <span>{r.correct ? '✅' : '❌'}</span>
                           <span className="truncate">{r.question}</span>
                         </div>
                       ))}
@@ -293,7 +293,7 @@ export default function ReadingPage() {
                     <motion.button onClick={restart} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
                       className="w-full py-4 rounded-xl font-poppins font-bold text-white text-lg cursor-pointer"
                       style={{ background: GRADIENT }}>
-                      ðŸ“– Read Another Passage
+                      📖 Read Another Passage
                     </motion.button>
                   </>
                 );
@@ -305,4 +305,3 @@ export default function ReadingPage() {
     </div>
   );
 }
-

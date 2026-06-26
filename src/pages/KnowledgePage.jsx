@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGame } from '../context/GameContext';
 import { getRandomKnowledgeQuestions } from '../data/knowledgeQuestions';
@@ -18,14 +18,14 @@ const GLOW = 'rgba(0,147,233,0.4)';
 const QUESTIONS_PER_ROUND = 15;
 
 const CAT_COLORS = {
-  'ðŸŒ Tanzania': '#f59e0b',
-  'ðŸŒ Africa': '#10b981',
-  'ðŸŒ Geography': '#3b82f6',
-  'ðŸŒ World': '#8b5cf6',
-  'ðŸ”¬ Science': '#06b6d4',
-  'âž— Maths': '#ec4899',
-  'ðŸ’» ICT': '#f97316',
-  'ðŸ¾ Nature': '#84cc16',
+  '🌍 Tanzania': '#f59e0b',
+  '🌍 Africa': '#10b981',
+  '🌍 Geography': '#3b82f6',
+  '🌍 World': '#8b5cf6',
+  '🔬 Science': '#06b6d4',
+  '➗ Maths': '#ec4899',
+  '💻 ICT': '#f97316',
+  '🐾 Nature': '#84cc16',
 };
 
 export default function KnowledgePage() {
@@ -127,7 +127,7 @@ export default function KnowledgePage() {
         <div className="max-w-lg mx-auto px-4 relative z-10 pt-4">
           <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
             className="glass rounded-3xl p-8 text-center">
-            <div className="text-6xl mb-3">{pct >= 80 ? 'ðŸ§ ' : pct >= 60 ? 'ðŸŒŸ' : 'ðŸ’ª'}</div>
+            <div className="text-6xl mb-3">{pct >= 80 ? '🧠' : pct >= 60 ? '🌟' : '💪'}</div>
             <h2 className="font-poppins font-black text-3xl text-white mb-1">
               {pct >= 80 ? 'Knowledge Master!' : pct >= 60 ? 'Great Scholar!' : 'Keep Exploring!'}
             </h2>
@@ -164,7 +164,7 @@ export default function KnowledgePage() {
             <motion.button onClick={() => restart()} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
               className="w-full py-4 rounded-xl font-poppins font-bold text-white text-lg cursor-pointer"
               style={{ background: GRADIENT }}>
-              ðŸŒ Play Again
+              🌍 Play Again
             </motion.button>
           </motion.div>
         </div>
@@ -181,8 +181,8 @@ export default function KnowledgePage() {
       <div className="max-w-2xl mx-auto px-4 relative z-10">
 
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-6">
-          <h1 className="font-poppins font-black text-4xl text-white mb-1">ðŸŒ Knowledge League</h1>
-          <p className="text-blue-300 font-semibold">Maths Â· Science Â· Geography Â· Tanzania Â· ICT & more</p>
+          <h1 className="font-poppins font-black text-4xl text-white mb-1">🌍 Knowledge League</h1>
+          <p className="text-blue-300 font-semibold">Maths · Science · Geography · Tanzania · ICT & more</p>
         </motion.div>
 
         {/* Year selector */}
@@ -212,7 +212,7 @@ export default function KnowledgePage() {
             </div>
           </div>
           <div className="flex items-center gap-2 px-3 py-1 rounded-xl" style={{ background: `${timerColor}20`, border: `1px solid ${timerColor}40` }}>
-            <span style={{ color: timerColor }} className="font-bold text-sm">â± {timeLeft}s</span>
+            <span style={{ color: timerColor }} className="font-bold text-sm">⏱ {timeLeft}s</span>
           </div>
         </div>
 
@@ -257,8 +257,8 @@ export default function KnowledgePage() {
                       {['A','B','C','D'][idx]}
                     </span>
                     {opt}
-                    {answered && isCorrect && <span className="ml-1">âœ…</span>}
-                    {answered && isSelected && !isCorrect && <span className="ml-1">âŒ</span>}
+                    {answered && isCorrect && <span className="ml-1">✅</span>}
+                    {answered && isSelected && !isCorrect && <span className="ml-1">❌</span>}
                   </motion.button>
                 );
               })}
@@ -268,7 +268,7 @@ export default function KnowledgePage() {
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                 className={`mt-4 rounded-2xl p-4 text-center font-poppins font-bold ${selected === q.answer ? 'text-green-400' : 'text-red-400'}`}
                 style={{ background: selected === q.answer ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)' }}>
-                {selected === q.answer ? `ðŸŽ‰ Correct! +${q.points} points!` : selected === '__timeout__' ? `â° Time's up! Answer: ${q.answer}` : `âŒ Answer: ${q.answer}`}
+                {selected === q.answer ? `🎉 Correct! +${q.points} points!` : selected === '__timeout__' ? `⏰ Time's up! Answer: ${q.answer}` : `❌ Answer: ${q.answer}`}
               </motion.div>
             )}
           </motion.div>
@@ -276,10 +276,9 @@ export default function KnowledgePage() {
 
         <div className="flex items-center justify-between mt-5 px-2">
           <span className="text-blue-300 text-sm">Score this round</span>
-          <span className="text-yellow-400 font-black text-xl">â­ {score}</span>
+          <span className="text-yellow-400 font-black text-xl">⭐ {score}</span>
         </div>
       </div>
     </div>
   );
 }
-

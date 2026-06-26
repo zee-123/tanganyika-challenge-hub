@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGame } from '../context/GameContext';
 import { spellingPool, getRandomSpellingQuestions, getSpellingPoints } from '../data/spellingWords';
@@ -112,7 +112,7 @@ export default function SpellingPage() {
         <div className="max-w-lg mx-auto px-4 relative z-10 pt-8">
           <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
             className="glass rounded-3xl p-8 text-center">
-            <div className="text-6xl mb-4">{pct >= 80 ? 'ðŸ' : pct >= 60 ? 'âœï¸' : 'ðŸ’ª'}</div>
+            <div className="text-6xl mb-4">{pct >= 80 ? '🐝' : pct >= 60 ? '✏️' : '💪'}</div>
             <h2 className="font-poppins font-black text-3xl text-white mb-1">
               {pct >= 80 ? 'Spelling Star!' : pct >= 60 ? 'Well Spelled!' : 'Keep Practising!'}
             </h2>
@@ -134,7 +134,7 @@ export default function SpellingPage() {
             <div className="space-y-2 mb-6 text-left max-h-40 overflow-y-auto">
               {results.map((r, i) => (
                 <div key={i} className={`rounded-xl px-3 py-2 text-sm flex items-center gap-2 ${r.correct ? 'bg-green-500/10 text-green-300' : 'bg-red-500/10 text-red-300'}`}>
-                  <span>{r.correct ? 'âœ…' : 'âŒ'}</span>
+                  <span>{r.correct ? '✅' : '❌'}</span>
                   <span className="font-mono font-bold">{r.word}</span>
                 </div>
               ))}
@@ -142,7 +142,7 @@ export default function SpellingPage() {
             <motion.button onClick={() => restart()} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
               className="w-full py-4 rounded-xl font-poppins font-bold text-white text-lg cursor-pointer"
               style={{ background: GRADIENT }}>
-              ðŸ Try Again
+              🐝 Try Again
             </motion.button>
           </motion.div>
         </div>
@@ -159,7 +159,7 @@ export default function SpellingPage() {
       <div className="max-w-2xl mx-auto px-4 relative z-10">
 
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-6">
-          <h1 className="font-poppins font-black text-4xl text-white mb-1">ðŸ Spelling Bee</h1>
+          <h1 className="font-poppins font-black text-4xl text-white mb-1">🐝 Spelling Bee</h1>
           <p className="text-green-300 font-semibold">Choose the correct spelling!</p>
         </motion.div>
 
@@ -190,7 +190,7 @@ export default function SpellingPage() {
             </div>
           </div>
           <div className="flex items-center gap-2 px-3 py-1 rounded-xl" style={{ background: `${timerColor}20`, border: `1px solid ${timerColor}40` }}>
-            <span style={{ color: timerColor }} className="font-bold text-sm">â± {timeLeft}s</span>
+            <span style={{ color: timerColor }} className="font-bold text-sm">⏱ {timeLeft}s</span>
           </div>
         </div>
 
@@ -232,8 +232,8 @@ export default function SpellingPage() {
                     className="p-4 rounded-2xl text-center font-mono font-bold text-xl cursor-pointer transition-all"
                     style={{ background: bg, border, color: textColor }}>
                     {opt}
-                    {answered && isCorrect && <span className="ml-2 text-base">âœ…</span>}
-                    {answered && isSelected && !isCorrect && <span className="ml-2 text-base">âŒ</span>}
+                    {answered && isCorrect && <span className="ml-2 text-base">✅</span>}
+                    {answered && isSelected && !isCorrect && <span className="ml-2 text-base">❌</span>}
                   </motion.button>
                 );
               })}
@@ -244,10 +244,10 @@ export default function SpellingPage() {
                 className={`mt-4 rounded-2xl p-4 text-center font-poppins font-bold text-xl ${selected === q.answer ? 'text-green-400' : 'text-red-400'}`}
                 style={{ background: selected === q.answer ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)' }}>
                 {selected === q.answer
-                  ? `ðŸŽ‰ "${q.answer}" â€” correct! +${pts} pts`
+                  ? `🎉 "${q.answer}" — correct! +${pts} pts`
                   : selected === '__timeout__'
-                    ? `â° Time's up! It's "${q.answer}"`
-                    : `âŒ Correct spelling: "${q.answer}"`}
+                    ? `⏰ Time's up! It's "${q.answer}"`
+                    : `❌ Correct spelling: "${q.answer}"`}
               </motion.div>
             )}
           </motion.div>
@@ -255,10 +255,9 @@ export default function SpellingPage() {
 
         <div className="flex items-center justify-between mt-5 px-2">
           <span className="text-green-300 text-sm">Score this round</span>
-          <span className="text-yellow-400 font-black text-xl">â­ {score}</span>
+          <span className="text-yellow-400 font-black text-xl">⭐ {score}</span>
         </div>
       </div>
     </div>
   );
 }
-
