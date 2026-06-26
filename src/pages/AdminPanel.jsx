@@ -8,7 +8,8 @@ import { getMessaging, getToken } from 'firebase/messaging';
 import { useAuth } from '../context/AuthContext';
 
 const NOTIFY_SECRET = import.meta.env.VITE_NOTIFY_SECRET || '';
-const VAPID_KEY = import.meta.env.VITE_FCM_VAPID_KEY || '';
+// VAPID public key from Firebase Console → Project Settings → Cloud Messaging → Web Push certificates
+const VAPID_KEY = 'BKIifE_iQjllohjjKl-wvDWt-4IoH0sWbJr0L-D3-VJD5Pdil6hJ1eY-NrxvbqnV5rEM48EJxi4PNtt8UpU_FuY';
 
 const SUBJECTS = [
   { key: 'englishPoints', label: 'English', icon: '📖', color: '#667eea' },
