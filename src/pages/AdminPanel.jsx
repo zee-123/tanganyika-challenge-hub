@@ -6,6 +6,7 @@ import { collection, getDocs, doc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { getMessaging, getToken } from 'firebase/messaging';
 import { useAuth } from '../context/AuthContext';
+import app from '../firebase';
 
 const NOTIFY_SECRET = import.meta.env.VITE_NOTIFY_SECRET || '';
 // VAPID public key from Firebase Console → Project Settings → Cloud Messaging → Web Push certificates
@@ -79,7 +80,7 @@ export default function AdminPanel() {
         }
       });
 
-      const messaging = getMessaging();
+      const messaging = getMessaging(app);
       const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: swReg });
       if (!token) { setEnableStatus('error'); setEnableError('No token returned — check VAPID key'); return; }
 
