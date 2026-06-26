@@ -1,7 +1,10 @@
-// Vercel serverless function — broadcasts a push notification to all stored FCM tokens
-// Env vars required (set in Vercel dashboard):
-//   FCM_SERVER_KEY  — Firebase Cloud Messaging legacy server key
-//   NOTIFY_SECRET   — A secret string to prevent unauthorized calls (set to anything you like)
+// Vercel serverless function — broadcasts push notifications via FCM V1 API
+// Env vars required in Vercel dashboard:
+//   FIREBASE_SERVICE_ACCOUNT  — full service account JSON (stringified)
+//   NOTIFY_SECRET             — any secret string you choose
+
+import { initializeApp, cert, getApps } from 'firebase-admin/app';
+import { getMessaging } from 'firebase-admin/messaging';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
@@ -12,32 +15,39 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
   if (!title || !body) return res.status(400).json({ error: 'title and body required' });
-  if (!tokens || !tokens.length) return res.status(400).json({ error: 'No tokens provided' });
+  if (!tokens?.length) return res.status(400).json({ error: 'No tokens provided' });
 
-  const serverKey = process.env.FCM_SERVER_KEY;
-  if (!serverKey) return res.status(500).json({ error: 'FCM_SERVER_KEY not configured' });
+  try {
+    const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
-  // FCM Legacy HTTP API — send to up to 1000 tokens at a time
-  const CHUNK = 1000;
-  const results = [];
+    if (!getApps().length) {
+      initializeApp({ credential: cert(serviceAccount) });
+    }
 
-  for (let i = 0; i < tokens.length; i += CHUNK) {
-    const chunk = tokens.slice(i, i + CHUNK);
-    const fcmRes = await fetch('https://fcm.googleapis.com/fcm/send', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `key=${serverKey}`,
-      },
-      body: JSON.stringify({
-        registration_ids: chunk,
-        notification: { title, body, icon: '/android-chrome-192x192.png' },
-        data: { click_action: '/dashboard' },
-      }),
-    });
-    const json = await fcmRes.json();
-    results.push(json);
+    const messaging = getMessaging();
+
+    // FCM V1 multicast — max 500 tokens per call
+    const CHUNK = 500;
+    let successCount = 0;
+    let failureCount = 0;
+
+    for (let i = 0; i < tokens.length; i += CHUNK) {
+      const chunk = tokens.slice(i, i + CHUNK);
+      const result = await messaging.sendEachForMulticast({
+        tokens: chunk,
+        notification: { title, body },
+        webpush: {
+          notification: { icon: '/android-chrome-192x192.png', badge: '/favicon-32x32.png' },
+          fcmOptions: { link: '/dashboard' },
+        },
+      });
+      successCount += result.successCount;
+      failureCount += result.failureCount;
+    }
+
+    return res.status(200).json({ ok: true, successCount, failureCount });
+  } catch (err) {
+    console.error('FCM error:', err);
+    return res.status(500).json({ error: err.message });
   }
-
-  return res.status(200).json({ ok: true, results });
 }
