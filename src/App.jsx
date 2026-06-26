@@ -19,9 +19,11 @@ import AdminPanel from './pages/AdminPanel';
 import AdminSetup from './pages/AdminSetup';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import { useNotifications } from './hooks/useNotifications';
 
 function AppRoutes() {
   const { currentUser, authLoading } = useAuth();
+  useNotifications(currentUser);
 
   if (authLoading) {
     return (

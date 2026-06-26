@@ -2,6 +2,10 @@ import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGame } from '../context/GameContext';
 import { useNavigate } from 'react-router-dom';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebase';
+
+const NOTIFY_SECRET = import.meta.env.VITE_NOTIFY_SECRET || '';
 
 const SUBJECTS = [
   { key: 'englishPoints', label: 'English', icon: '📖', color: '#667eea' },
@@ -35,6 +39,30 @@ export default function AdminPanel() {
   const [sortBy, setSortBy] = useState('totalPoints');
   const [selected, setSelected] = useState(null);
   const [yearFilter, setYearFilter] = useState('All');
+
+  // Announcement state
+  const [notifTitle, setNotifTitle] = useState('');
+  const [notifBody, setNotifBody] = useState('');
+  const [notifStatus, setNotifStatus] = useState('idle'); // idle | sending | sent | error
+
+  const sendAnnouncement = async () => {
+    if (!notifTitle.trim() || !notifBody.trim()) return;
+    setNotifStatus('sending');
+    try {
+      // Fetch all FCM tokens from Firestore
+      const snap = await getDocs(collection(db, 'fcmTokens'));
+      const tokens = snap.docs.map(d => d.data().token).filter(Boolean);
+      if (!tokens.length) { setNotifStatus('error'); return; }
+
+      const res = await fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ secret: NOTIFY_SECRET, title: notifTitle, body: notifBody, tokens }),
+      });
+      if (res.ok) { setNotifStatus('sent'); setNotifTitle(''); setNotifBody(''); setTimeout(() => setNotifStatus('idle'), 3000); }
+      else setNotifStatus('error');
+    } catch { setNotifStatus('error'); }
+  };
 
   if (!isAdmin) {
     return (
@@ -294,6 +322,52 @@ export default function AdminPanel() {
               </div>
             );
           })}
+        </div>
+      </motion.div>
+
+      {/* Send Announcement */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
+        className="max-w-7xl mx-auto mt-8">
+        <h2 className="text-white font-bold text-lg mb-4">📣 Send Announcement to All Students</h2>
+        <div className="rounded-2xl p-6" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(168,85,247,0.25)' }}>
+          <p className="text-purple-300 text-sm mb-4">
+            Push a notification to every student who has the app installed and granted permission.
+          </p>
+          <div className="flex flex-col gap-3 max-w-xl">
+            <input
+              type="text"
+              placeholder="Notification title (e.g. New Challenge Available!)"
+              value={notifTitle}
+              onChange={e => setNotifTitle(e.target.value)}
+              maxLength={80}
+              className="px-4 py-2.5 rounded-xl text-white text-sm outline-none"
+              style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(168,85,247,0.3)' }}
+            />
+            <textarea
+              placeholder="Message body (e.g. The Olympiad challenge is now live — log in and compete!)"
+              value={notifBody}
+              onChange={e => setNotifBody(e.target.value)}
+              maxLength={200}
+              rows={3}
+              className="px-4 py-2.5 rounded-xl text-white text-sm outline-none resize-none"
+              style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(168,85,247,0.3)' }}
+            />
+            <button
+              onClick={sendAnnouncement}
+              disabled={notifStatus === 'sending' || !notifTitle.trim() || !notifBody.trim()}
+              className="px-6 py-2.5 rounded-xl font-bold text-white cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed self-start"
+              style={{ background: 'linear-gradient(135deg, #667eea, #764ba2)' }}>
+              {notifStatus === 'sending' ? '⏳ Sending…' : notifStatus === 'sent' ? '✅ Sent!' : notifStatus === 'error' ? '❌ Error — check setup' : '📣 Send to All Students'}
+            </button>
+            {notifStatus === 'error' && (
+              <p className="text-red-400 text-xs">
+                Failed to send. Make sure FCM_SERVER_KEY and VITE_NOTIFY_SECRET are set in Vercel environment variables.
+              </p>
+            )}
+            <p className="text-purple-500 text-xs">
+              Only students who installed the app and accepted notifications will receive this.
+            </p>
+          </div>
         </div>
       </motion.div>
     </div>
