@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import {
   doc, onSnapshot, updateDoc, setDoc, getDoc, increment, arrayUnion,
-  collection, query, orderBy, limit,
+  collection, query, orderBy, getDocs,
 } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import { auth, db } from '../firebase';
@@ -119,9 +119,9 @@ export function GameProvider({ children }) {
     return unsub;
   }, [currentUser]);
 
-  // Real-time leaderboard — top 50 by totalPoints
+  // Real-time leaderboard — all students by totalPoints
   useEffect(() => {
-    const q = query(collection(db, 'stats'), orderBy('totalPoints', 'desc'), limit(50));
+    const q = query(collection(db, 'stats'), orderBy('totalPoints', 'desc'));
     const unsub = onSnapshot(q, (snap) => {
       setLeaderboard(snap.docs.map((d, i) => ({ uid: d.id, ...d.data(), rank: i + 1 })));
     });
@@ -229,6 +229,8 @@ export function GameProvider({ children }) {
     ? { uid: currentUser.uid, ...userProfile }
     : null;
 
+  const isAdmin = userProfile?.role === 'admin';
+
   // Weekly leaderboard: same data filtered to current week, sorted by weeklyPoints
   const currentWeekStart = getWeekStart();
   const weeklyLeaderboard = [...leaderboard]
@@ -249,6 +251,7 @@ export function GameProvider({ children }) {
       currentWeekStart,
       logout,
       BADGES,
+      isAdmin,
     }}>
       {children}
     </GameContext.Provider>
