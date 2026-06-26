@@ -80,9 +80,7 @@ export default function AdminPanel() {
       });
 
       const messaging = getMessaging();
-      // Convert URL-safe base64 VAPID key to standard base64
-      const vapidKey = VAPID_KEY.replace(/-/g, '+').replace(/_/g, '/');
-      const token = await getToken(messaging, { vapidKey, serviceWorkerRegistration: swReg });
+      const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: swReg });
       if (!token) { setEnableStatus('error'); setEnableError('No token returned — check VAPID key'); return; }
 
       await setDoc(doc(db, 'fcmTokens', currentUser.uid), {
