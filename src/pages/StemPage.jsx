@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGame } from '../context/GameContext';
 import { getRandomStemQuestions } from '../data/stemQuestions';
@@ -17,11 +17,11 @@ const GRADIENT = 'linear-gradient(135deg, #00b09b 0%, #96c93d 100%)';
 const QUESTIONS_PER_ROUND = 15;
 
 const CAT_COLORS = {
-  '🔬 Science': '#06b6d4',
-  '⚙️ Engineering': '#f97316',
-  '💻 Technology': '#8b5cf6',
-  '🧮 Maths': '#ec4899',
-  '🌿 Environment': '#22c55e',
+  'ðŸ”¬ Science': '#06b6d4',
+  'âš™ï¸ Engineering': '#f97316',
+  'ðŸ’» Technology': '#8b5cf6',
+  'ðŸ§® Maths': '#ec4899',
+  'ðŸŒ¿ Environment': '#22c55e',
 };
 
 export default function StemPage() {
@@ -107,13 +107,13 @@ export default function StemPage() {
       if (r.correct) catCounts[r.cat].correct++;
     });
     return (
-      <div className="min-h-screen pt-20 pb-10 relative"
+      <div className="min-h-screen pt-28 pb-10 relative"
         style={{ background: 'linear-gradient(135deg, #003d2e 0%, #005c42 50%, #001a15 100%)' }}>
         <StarField />
         <div className="max-w-lg mx-auto px-4 relative z-10 pt-4">
           <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
             className="glass rounded-3xl p-8 text-center">
-            <div className="text-6xl mb-3">{pct >= 80 ? '🚀' : pct >= 60 ? '⚗️' : '🔭'}</div>
+            <div className="text-6xl mb-3">{pct >= 80 ? 'ðŸš€' : pct >= 60 ? 'âš—ï¸' : 'ðŸ”­'}</div>
             <h2 className="font-poppins font-black text-3xl text-white mb-1">
               {pct >= 80 ? 'STEM Genius!' : pct >= 60 ? 'Great Scientist!' : 'Keep Exploring!'}
             </h2>
@@ -150,7 +150,7 @@ export default function StemPage() {
             <motion.button onClick={() => restart()} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
               className="w-full py-4 rounded-xl font-poppins font-bold text-white text-lg cursor-pointer"
               style={{ background: GRADIENT }}>
-              🔬 Try Again
+              ðŸ”¬ Try Again
             </motion.button>
           </motion.div>
         </div>
@@ -161,14 +161,14 @@ export default function StemPage() {
   if (!q) return null;
 
   return (
-    <div className="min-h-screen pt-20 pb-10 relative"
+    <div className="min-h-screen pt-28 pb-10 relative"
       style={{ background: 'linear-gradient(135deg, #003d2e 0%, #005c42 50%, #001a15 100%)' }}>
       <StarField />
       <div className="max-w-2xl mx-auto px-4 relative z-10">
 
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-6">
-          <h1 className="font-poppins font-black text-4xl text-white mb-1">🔬 STEM Challenge</h1>
-          <p className="text-emerald-300 font-semibold">Science · Technology · Engineering · Maths</p>
+          <h1 className="font-poppins font-black text-4xl text-white mb-1">ðŸ”¬ STEM Challenge</h1>
+          <p className="text-emerald-300 font-semibold">Science Â· Technology Â· Engineering Â· Maths</p>
         </motion.div>
 
         {/* Year selector */}
@@ -199,7 +199,7 @@ export default function StemPage() {
           </div>
           <div className="flex items-center gap-2 px-3 py-1 rounded-xl"
             style={{ background: `${timerColor}20`, border: `1px solid ${timerColor}40` }}>
-            <span style={{ color: timerColor }} className="font-bold text-sm">⏱ {timeLeft}s</span>
+            <span style={{ color: timerColor }} className="font-bold text-sm">â± {timeLeft}s</span>
           </div>
         </div>
 
@@ -245,8 +245,8 @@ export default function StemPage() {
                       {['A', 'B', 'C', 'D'][idx]}
                     </span>
                     {opt}
-                    {answered && isCorrect && <span className="ml-2">✅</span>}
-                    {answered && isSelected && !isCorrect && <span className="ml-2">❌</span>}
+                    {answered && isCorrect && <span className="ml-2">âœ…</span>}
+                    {answered && isSelected && !isCorrect && <span className="ml-2">âŒ</span>}
                   </motion.button>
                 );
               })}
@@ -257,10 +257,10 @@ export default function StemPage() {
                 className={`mt-4 rounded-2xl p-4 text-center font-poppins font-bold ${selected === q.answer ? 'text-green-400' : 'text-red-400'}`}
                 style={{ background: selected === q.answer ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)' }}>
                 {selected === q.answer
-                  ? `🎉 Correct! +${q.points} points!`
+                  ? `ðŸŽ‰ Correct! +${q.points} points!`
                   : selected === '__timeout__'
-                    ? `⏰ Time's up! Answer: ${q.answer}`
-                    : `❌ Answer: ${q.answer}`}
+                    ? `â° Time's up! Answer: ${q.answer}`
+                    : `âŒ Answer: ${q.answer}`}
               </motion.div>
             )}
           </motion.div>
@@ -268,9 +268,10 @@ export default function StemPage() {
 
         <div className="flex items-center justify-between mt-5 px-2">
           <span className="text-emerald-300 text-sm">Score this round</span>
-          <span className="text-yellow-400 font-black text-xl">⭐ {score}</span>
+          <span className="text-yellow-400 font-black text-xl">â­ {score}</span>
         </div>
       </div>
     </div>
   );
 }
+

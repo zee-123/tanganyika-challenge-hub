@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+﻿import { motion } from 'framer-motion';
 import { useGame } from '../context/GameContext';
 import StarField from '../components/StarField';
 
@@ -10,17 +10,17 @@ export default function Leaderboard() {
   const myEntry = leaderboard.find(s => s.uid === student?.uid);
 
   return (
-    <div className="min-h-screen pt-20 pb-10 relative"
+    <div className="min-h-screen pt-28 pb-10 relative"
       style={{ background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)' }}>
       <StarField />
       <div className="max-w-3xl mx-auto px-4 relative z-10">
 
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
-          <div className="text-6xl mb-3 floating">🏆</div>
+          <div className="text-6xl mb-3 floating">ðŸ†</div>
           <h1 className="font-poppins font-black text-4xl text-white mb-2">School Leaderboard</h1>
           <p className="text-purple-300">
             {leaderboard.length > 0 ? `${leaderboard.length} students competing` : 'Be the first on the board!'}
-            {' '}· Live updates 🔴
+            {' '}Â· Live updates ðŸ”´
           </p>
         </motion.div>
 
@@ -46,7 +46,7 @@ export default function Leaderboard() {
 
         {leaderboard.length === 0 ? (
           <div className="glass rounded-2xl p-10 text-center">
-            <div className="text-5xl mb-4">🌟</div>
+            <div className="text-5xl mb-4">ðŸŒŸ</div>
             <p className="text-white font-bold text-lg mb-2">No one's here yet!</p>
             <p className="text-purple-300 text-sm">Complete a challenge to appear on the leaderboard.</p>
           </div>
@@ -69,7 +69,7 @@ export default function Leaderboard() {
                         background: isMe ? 'rgba(168,85,247,0.2)' : RANK_BG[realRank] || 'rgba(255,255,255,0.06)',
                         border: `1px solid ${isMe ? '#a855f7' : RANK_COLORS[realRank] || 'rgba(255,255,255,0.1)'}40`,
                       }}>
-                      <div className="text-3xl mb-1">{realRank === 1 ? '👑' : realRank === 2 ? '🥈' : '🥉'}</div>
+                      <div className="text-3xl mb-1">{realRank === 1 ? 'ðŸ‘‘' : realRank === 2 ? 'ðŸ¥ˆ' : 'ðŸ¥‰'}</div>
                       <div className="text-3xl">{s.avatar}</div>
                       <p className="text-white font-bold text-sm mt-1 leading-tight">
                         {s.name?.split(' ')[0]}{isMe ? ' (You)' : ''}
@@ -100,14 +100,14 @@ export default function Leaderboard() {
                     style={{ background: isMe ? 'rgba(168,85,247,0.15)' : i % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent' }}>
                     <div className="w-8 text-center font-black text-base"
                       style={{ color: RANK_COLORS[s.rank] || 'rgba(255,255,255,0.3)' }}>
-                      {s.rank <= 3 ? ['🥇', '🥈', '🥉'][s.rank - 1] : s.rank}
+                      {s.rank <= 3 ? ['ðŸ¥‡', 'ðŸ¥ˆ', 'ðŸ¥‰'][s.rank - 1] : s.rank}
                     </div>
                     <div className="text-2xl">{s.avatar}</div>
                     <div className="flex-1 min-w-0">
                       <p className="text-white font-bold text-sm truncate">
                         {s.name} {isMe && <span className="text-purple-400 text-xs">(You)</span>}
                       </p>
-                      <p className="text-purple-400 text-xs">{s.yearGroup}{s.class ? ` · Class ${s.class}` : ''}</p>
+                      <p className="text-purple-400 text-xs">{s.yearGroup}{s.class ? ` Â· Class ${s.class}` : ''}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-yellow-400 font-black">{s.totalPoints}</p>
@@ -121,9 +121,10 @@ export default function Leaderboard() {
         )}
 
         <p className="text-center text-purple-500 text-xs mt-4">
-          🔴 Live · Updates instantly as students earn points
+          ðŸ”´ Live Â· Updates instantly as students earn points
         </p>
       </div>
     </div>
   );
 }
+

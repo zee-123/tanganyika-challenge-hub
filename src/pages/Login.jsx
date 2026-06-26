@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   createUserWithEmailAndPassword,
@@ -10,7 +10,7 @@ import {
 import { auth, db } from '../firebase';
 import StarField from '../components/StarField';
 
-const AVATARS = ['🦁', '🐯', '🦊', '🐺', '🦅', '🐬', '🦋', '🌟', '🐉', '🦄', '🐧', '🦈'];
+const AVATARS = ['ðŸ¦', 'ðŸ¯', 'ðŸ¦Š', 'ðŸº', 'ðŸ¦…', 'ðŸ¬', 'ðŸ¦‹', 'ðŸŒŸ', 'ðŸ‰', 'ðŸ¦„', 'ðŸ§', 'ðŸ¦ˆ'];
 const YEAR_GROUPS = [
   { value: 'Reception',  label: 'Reception' },
   { value: 'Year 1',     label: 'Year 1 / Grade 1' },
@@ -49,7 +49,7 @@ export default function Login() {
   const [regYear, setRegYear] = useState('');
   const [regPassword, setRegPassword] = useState('');
   const [regConfirm, setRegConfirm] = useState('');
-  const [regAvatar, setRegAvatar] = useState('🦁');
+  const [regAvatar, setRegAvatar] = useState('ðŸ¦');
   const [usernameStatus, setUsernameStatus] = useState(null); // null | 'checking' | 'taken' | 'available'
 
   // Username availability check (debounced)
@@ -94,9 +94,9 @@ export default function Login() {
     setError('');
     if (!regName.trim()) return setError('Please enter your name.');
     if (!validateUsername(regUsername.toLowerCase()))
-      return setError('Username must be 3–20 characters, letters, numbers or underscore only.');
+      return setError('Username must be 3â€“20 characters, letters, numbers or underscore only.');
     if (usernameStatus === 'taken') return setError('That username is already taken.');
-    if (usernameStatus === 'checking') return setError('Checking username availability…');
+    if (usernameStatus === 'checking') return setError('Checking username availabilityâ€¦');
     if (!regYear) return setError('Please select your year group.');
     if (regPassword.length < 6) return setError('Password must be at least 6 characters.');
     if (regPassword !== regConfirm) return setError('Passwords do not match.');
@@ -111,7 +111,7 @@ export default function Login() {
       // Double-check username isn't taken
       const usernameSnap = await getDoc(doc(db, 'usernames', uname));
       if (usernameSnap.exists()) {
-        setError('That username was just taken — please choose another.');
+        setError('That username was just taken â€” please choose another.');
         setStep(1);
         setLoading(false);
         return;
@@ -178,7 +178,7 @@ export default function Login() {
                   color: tab === t ? '#c084fc' : 'rgba(255,255,255,0.4)',
                   borderBottom: tab === t ? '2px solid #a855f7' : '2px solid transparent',
                 }}>
-                {t === 'login' ? '🔑 Sign In' : '✨ Register'}
+                {t === 'login' ? 'ðŸ”‘ Sign In' : 'âœ¨ Register'}
               </button>
             ))}
           </div>
@@ -186,7 +186,7 @@ export default function Login() {
           <div className="p-7">
             <AnimatePresence mode="wait">
 
-              {/* ── LOGIN ── */}
+              {/* â”€â”€ LOGIN â”€â”€ */}
               {tab === 'login' && (
                 <motion.form key="login" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
                   onSubmit={handleLogin} className="space-y-4">
@@ -201,7 +201,7 @@ export default function Login() {
                   <div>
                     <label className="text-purple-200 text-sm font-semibold mb-1.5 block">Password</label>
                     <input type="password" value={loginPassword} onChange={e => setLoginPassword(e.target.value)}
-                      placeholder="••••••••"
+                      placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
                       className="w-full px-4 py-3 rounded-xl text-white font-medium outline-none transition-all"
                       style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(168,85,247,0.3)', fontSize: '1rem' }}
                       autoComplete="current-password" />
@@ -209,14 +209,14 @@ export default function Login() {
                   {error && (
                     <div className="rounded-xl px-4 py-3 text-red-300 text-sm font-semibold"
                       style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)' }}>
-                      ⚠️ {error}
+                      âš ï¸ {error}
                     </div>
                   )}
                   <motion.button type="submit" disabled={loading}
                     whileHover={!loading ? { scale: 1.02 } : {}} whileTap={!loading ? { scale: 0.98 } : {}}
                     className="w-full py-3.5 rounded-xl font-poppins font-bold text-white text-base cursor-pointer transition-all disabled:opacity-50"
                     style={{ background: 'linear-gradient(135deg, #a855f7 0%, #6366f1 100%)' }}>
-                    {loading ? '⏳ Signing in…' : '🚀 Sign In'}
+                    {loading ? 'â³ Signing inâ€¦' : 'ðŸš€ Sign In'}
                   </motion.button>
                   <p className="text-center text-purple-400 text-xs">
                     New student?{' '}
@@ -228,11 +228,11 @@ export default function Login() {
                 </motion.form>
               )}
 
-              {/* ── REGISTER STEP 1 ── */}
+              {/* â”€â”€ REGISTER STEP 1 â”€â”€ */}
               {tab === 'register' && step === 1 && (
                 <motion.form key="reg1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
                   onSubmit={handleRegisterStep1} className="space-y-4">
-                  <p className="text-purple-300 text-xs font-semibold text-center">Step 1 of 2 — Your details</p>
+                  <p className="text-purple-300 text-xs font-semibold text-center">Step 1 of 2 â€” Your details</p>
 
                   <div>
                     <label className="text-purple-200 text-sm font-semibold mb-1.5 block">Full Name</label>
@@ -251,10 +251,10 @@ export default function Login() {
                         style={{ background: 'rgba(255,255,255,0.08)', border: `1px solid ${usernameStatus === 'available' ? 'rgba(34,197,94,0.5)' : usernameStatus === 'taken' ? 'rgba(239,68,68,0.5)' : 'rgba(168,85,247,0.3)'}`, fontSize: '1rem' }}
                         autoCapitalize="none" />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm">
-                        {usernameStatus === 'checking' ? '⏳' : usernameStatus === 'available' ? '✅' : usernameStatus === 'taken' ? '❌' : ''}
+                        {usernameStatus === 'checking' ? 'â³' : usernameStatus === 'available' ? 'âœ…' : usernameStatus === 'taken' ? 'âŒ' : ''}
                       </span>
                     </div>
-                    {usernameStatus === 'taken' && <p className="text-red-400 text-xs mt-1">Username taken — try another</p>}
+                    {usernameStatus === 'taken' && <p className="text-red-400 text-xs mt-1">Username taken â€” try another</p>}
                     {usernameStatus === 'available' && <p className="text-green-400 text-xs mt-1">Username available!</p>}
                   </div>
 
@@ -263,7 +263,7 @@ export default function Login() {
                     <select value={regYear} onChange={e => setRegYear(e.target.value)}
                       className="w-full px-4 py-3 rounded-xl text-white font-medium outline-none cursor-pointer"
                       style={{ background: 'rgba(30,20,60,0.95)', border: '1px solid rgba(168,85,247,0.3)', fontSize: '0.95rem' }}>
-                      <option value="">Select year / grade…</option>
+                      <option value="">Select year / gradeâ€¦</option>
                       {YEAR_GROUPS.map(y => <option key={y.value} value={y.value}>{y.label}</option>)}
                     </select>
                   </div>
@@ -289,24 +289,24 @@ export default function Login() {
                   {error && (
                     <div className="rounded-xl px-4 py-3 text-red-300 text-sm font-semibold"
                       style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)' }}>
-                      ⚠️ {error}
+                      âš ï¸ {error}
                     </div>
                   )}
 
                   <motion.button type="submit" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                     className="w-full py-3.5 rounded-xl font-poppins font-bold text-white text-base cursor-pointer"
                     style={{ background: 'linear-gradient(135deg, #a855f7 0%, #6366f1 100%)' }}>
-                    Next → Pick Your Avatar
+                    Next â†’ Pick Your Avatar
                   </motion.button>
                 </motion.form>
               )}
 
-              {/* ── REGISTER STEP 2 — AVATAR ── */}
+              {/* â”€â”€ REGISTER STEP 2 â€” AVATAR â”€â”€ */}
               {tab === 'register' && step === 2 && (
                 <motion.div key="reg2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                  <p className="text-purple-300 text-xs font-semibold text-center mb-4">Step 2 of 2 — Choose your avatar</p>
+                  <p className="text-purple-300 text-xs font-semibold text-center mb-4">Step 2 of 2 â€” Choose your avatar</p>
                   <p className="text-white font-bold text-center mb-5">
-                    Welcome, <span className="gradient-text">{regName.split(' ')[0]}</span>! 👋
+                    Welcome, <span className="gradient-text">{regName.split(' ')[0]}</span>! ðŸ‘‹
                   </p>
 
                   <div className="grid grid-cols-4 gap-3 mb-6">
@@ -327,7 +327,7 @@ export default function Login() {
                   {error && (
                     <div className="rounded-xl px-4 py-3 text-red-300 text-sm font-semibold mb-4"
                       style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)' }}>
-                      ⚠️ {error}
+                      âš ï¸ {error}
                     </div>
                   )}
 
@@ -335,13 +335,13 @@ export default function Login() {
                     <button type="button" onClick={() => { setStep(1); setError(''); }}
                       className="px-5 py-3 rounded-xl text-purple-300 font-bold text-sm cursor-pointer transition-all"
                       style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(168,85,247,0.3)' }}>
-                      ← Back
+                      â† Back
                     </button>
                     <motion.button type="button" onClick={handleRegisterFinish} disabled={loading}
                       whileHover={!loading ? { scale: 1.02 } : {}} whileTap={!loading ? { scale: 0.98 } : {}}
                       className="flex-1 py-3 rounded-xl font-poppins font-bold text-white text-base cursor-pointer disabled:opacity-50"
                       style={{ background: 'linear-gradient(135deg, #a855f7 0%, #6366f1 100%)' }}>
-                      {loading ? '⏳ Creating account…' : '🚀 Start Playing!'}
+                      {loading ? 'â³ Creating accountâ€¦' : 'ðŸš€ Start Playing!'}
                     </motion.button>
                   </div>
                 </motion.div>
@@ -352,9 +352,10 @@ export default function Login() {
         </motion.div>
 
         <p className="text-center text-purple-500 text-xs mt-4">
-          Sky Wings Academy · The Tanganyika Schools · Centres of Excellence
+          Sky Wings Academy Â· The Tanganyika Schools Â· Centres of Excellence
         </p>
       </div>
     </div>
   );
 }
+
