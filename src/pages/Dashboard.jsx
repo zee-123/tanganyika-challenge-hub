@@ -66,7 +66,7 @@ const container = { hidden: {}, show: { transition: { staggerChildren: 0.1 } } }
 const item = { hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } };
 
 export default function Dashboard() {
-  const { student, stats, getRank, leaderboard } = useGame();
+  const { student, stats, getRank, leaderboard, weeklyChampion } = useGame();
   const rank = getRank();
   const myRank = leaderboard.find(s => s.uid === student?.uid)?.rank || '—';
   const accuracy = stats.questionsAnswered > 0
@@ -117,6 +117,39 @@ export default function Dashboard() {
             </motion.div>
           ))}
         </motion.div>
+
+        {/* Weekly Champion banner */}
+        {weeklyChampion && (
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.15 }}
+            className="rounded-3xl p-5 mb-8 flex flex-col sm:flex-row items-center gap-4"
+            style={{
+              background: 'linear-gradient(135deg, rgba(251,191,36,0.18) 0%, rgba(245,158,11,0.12) 100%)',
+              border: '1px solid rgba(251,191,36,0.45)',
+              boxShadow: '0 0 32px rgba(251,191,36,0.12)',
+            }}>
+            <div className="flex items-center gap-3">
+              <span className="text-3xl">🏆</span>
+              <div>
+                <p className="text-yellow-400 text-xs font-bold uppercase tracking-widest">Last Week's Champion</p>
+                <p className="text-white font-black text-lg leading-tight">{weeklyChampion.name}</p>
+                <p className="text-yellow-300 text-xs">{weeklyChampion.yearGroup} · {weeklyChampion.weekOf}</p>
+              </div>
+            </div>
+            <div className="text-5xl sm:ml-2">{weeklyChampion.avatar}</div>
+            <div className="sm:ml-auto text-center px-5 py-2 rounded-2xl"
+              style={{ background: 'rgba(251,191,36,0.15)', border: '1px solid rgba(251,191,36,0.3)' }}>
+              <p className="text-yellow-400 font-black text-xl">⭐ {weeklyChampion.points}</p>
+              <p className="text-yellow-300 text-xs font-semibold">Weekly Points</p>
+            </div>
+            {weeklyChampion.uid === student?.uid && (
+              <div className="px-4 py-2 rounded-2xl text-center"
+                style={{ background: 'rgba(251,191,36,0.25)', border: '1px solid rgba(251,191,36,0.5)' }}>
+                <p className="text-yellow-300 font-black text-sm">🎉 That's You!</p>
+              </div>
+            )}
+          </motion.div>
+        )}
 
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Subject cards */}

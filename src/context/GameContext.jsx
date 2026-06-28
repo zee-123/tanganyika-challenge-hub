@@ -161,6 +161,19 @@ export function GameProvider({ children }) {
         updatedAt: new Date().toISOString(),
       }, { merge: true });
 
+      // Award weekly champion badge to last week's winner
+      if (champ) {
+        const champBadge = {
+          id: `weekly_champ_${prevWeekStart}`,
+          name: 'Weekly Champion',
+          icon: '🏆',
+          color: '#FFD700',
+          weekOf: formatWeekRange(prevWeekStart),
+          earnedAt: new Date().toISOString(),
+        };
+        updateDoc(doc(db, 'stats', champ.uid), { badges: arrayUnion(champBadge) }).catch(() => {});
+      }
+
       setWeeklyChampion(newChampion);
     }).catch(() => {});
   }, [leaderboard]);
