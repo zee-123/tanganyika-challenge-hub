@@ -1,7 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGame } from '../context/GameContext';
 import { getRandomQuestions } from '../data/questions';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 import confetti from 'canvas-confetti';
 
 const YEAR_MAP = {
@@ -21,6 +23,24 @@ export default function QuizEngine({ subject, pool, gradient, icon, monsterMode 
   const resolvedKey = pool[yearKey] ? yearKey : available[0];
 
   const [selectedYear, setSelectedYear] = useState(resolvedKey);
+  const [customQs, setCustomQs] = useState([]);
+  const customQsRef = useRef([]);
+
+  useEffect(() => {
+    if (!subject) return;
+    const docId = `${subject}_${selectedYear.replace(/\s/g, '')}`;
+    getDoc(doc(db, 'customQuestions', docId))
+      .then(snap => {
+        const qs = snap.exists() ? (snap.data().questions || []) : [];
+        setCustomQs(qs);
+        customQsRef.current = qs;
+      })
+      .catch(() => {});
+  }, [subject, selectedYear]);
+
+  const getMergedPool = useCallback((yr, cqs = customQsRef.current) =>
+    [...(pool[yr] || []), ...cqs], [pool]);
+
   const [qs, setQs] = useState(() => getRandomQuestions(pool[resolvedKey] || [], QUESTIONS_PER_ROUND));
   const [currentQ, setCurrentQ] = useState(0);
   const [selected, setSelected] = useState(null);
@@ -108,7 +128,7 @@ export default function QuizEngine({ subject, pool, gradient, icon, monsterMode 
   };
 
   const restart = () => {
-    setQs(getRandomQuestions(pool[selectedYear] || [], QUESTIONS_PER_ROUND));
+    setQs(getRandomQuestions(getMergedPool(selectedYear), QUESTIONS_PER_ROUND));
     setCurrentQ(0); setSelected(null); setAnswered(false);
     setScore(0); setFinished(false); setMonsterHp(100);
     setPlayerHp(100); setResults([]); setTimeLeft(30); setTimerActive(true);
@@ -165,7 +185,7 @@ export default function QuizEngine({ subject, pool, gradient, icon, monsterMode 
       {/* Year selector */}
       <div className="flex flex-wrap gap-2 mb-6 justify-center">
         {available.map(yr => (
-          <button key={yr} onClick={() => { setSelectedYear(yr); setQs(getRandomQuestions(pool[yr] || [], QUESTIONS_PER_ROUND)); setCurrentQ(0); setSelected(null); setAnswered(false); setScore(0); setMonsterHp(100); setPlayerHp(100); setResults([]); setTimeLeft(30); setTimerActive(true); }}
+          <button key={yr} onClick={() => { setSelectedYear(yr); setQs(getRandomQuestions(getMergedPool(yr), QUESTIONS_PER_ROUND)); setCurrentQ(0); setSelected(null); setAnswered(false); setScore(0); setMonsterHp(100); setPlayerHp(100); setResults([]); setTimeLeft(30); setTimerActive(true); }}
             className="px-4 py-2 rounded-xl text-sm font-bold cursor-pointer transition-all"
             style={{
               background: selectedYear === yr ? gradient : 'rgba(255,255,255,0.08)',
