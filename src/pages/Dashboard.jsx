@@ -60,6 +60,22 @@ const subjects = [
     key: 'knowledge',
     phase: 2,
   },
+  {
+    path: '/stem', icon: '🔬', label: 'STEM Challenge',
+    desc: 'Science · Technology · Engineering · Maths',
+    gradient: 'linear-gradient(135deg, #00b09b 0%, #96c93d 100%)',
+    glow: 'rgba(0,176,155,0.4)',
+    key: 'stem',
+    phase: 3,
+  },
+  {
+    path: '/olympiad', icon: '🏆', label: 'Cambridge Olympiad',
+    desc: 'Maths · Science · English · Reasoning',
+    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    glow: 'rgba(102,126,234,0.4)',
+    key: 'olympiad',
+    phase: 3,
+  },
 ];
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.1 } } };
@@ -188,8 +204,34 @@ export default function Dashboard() {
 
             {/* Phase 2 */}
             <p className="text-yellow-400 text-xs font-bold uppercase tracking-widest mb-3">⭐ Phase 2 — New Challenges</p>
-            <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-2 gap-3">
+            <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-2 gap-3 mb-5">
               {subjects.filter(s => s.phase === 2).map(sub => {
+                const subPoints = stats[`${sub.key}Points`] || 0;
+                return (
+                  <motion.div key={sub.path} variants={item} whileHover={{ scale: 1.03, y: -3 }}>
+                    <Link to={sub.path} className="no-underline">
+                      <div className="rounded-2xl p-4 cursor-pointer transition-all h-full"
+                        style={{ background: sub.gradient, boxShadow: `0 6px 24px ${sub.glow}` }}>
+                        <div className="text-3xl mb-2">{sub.icon}</div>
+                        <h3 className="font-poppins font-bold text-white text-sm leading-tight">{sub.label}</h3>
+                        <p className="text-white/75 text-xs mt-1 leading-snug">{sub.desc}</p>
+                        <div className="mt-2 flex items-center gap-1">
+                          <div className="flex-1 h-1.5 rounded-full bg-white/20">
+                            <div className="h-1.5 rounded-full bg-white/80 transition-all"
+                              style={{ width: `${Math.min((subPoints / 300) * 100, 100)}%` }} />
+                          </div>
+                          <span className="text-white text-xs font-bold">{subPoints}</span>
+                        </div>
+                      </div>
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+            {/* Phase 3 */}
+            <p className="text-purple-400 text-xs font-bold uppercase tracking-widest mb-3 mt-1">🏆 Phase 3 — Elite Challenges</p>
+            <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-2 gap-3">
+              {subjects.filter(s => s.phase === 3).map(sub => {
                 const subPoints = stats[`${sub.key}Points`] || 0;
                 return (
                   <motion.div key={sub.path} variants={item} whileHover={{ scale: 1.03, y: -3 }}>
